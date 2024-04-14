@@ -1,0 +1,5 @@
+pip install SQLAlchemy alembic
+pip install psycopg2-binary
+
+# No hacer
+alembic init alembic
