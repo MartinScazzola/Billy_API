@@ -1,5 +1,5 @@
 pip install SQLAlchemy alembic
 pip install psycopg2-binary
-
-# No hacer
-alembic init alembic
+pip install pydantic
+pip install fastapi
+pip install fastapi uvicorn
