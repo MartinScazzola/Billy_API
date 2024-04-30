@@ -1,5 +1,18 @@
-pip install SQLAlchemy alembic
-pip install psycopg2-binary
-pip install pydantic
-pip install fastapi
-pip install fastapi uvicorn
+appdirs==1.4.4
+asgiref==3.4.1
+black==22.3.0
+certifi==2021.5.30
+click==8.0.1
+et-xmlfile==1.1.0
+fastapi==0.66.0
+h11==0.12.0
+mypy-extensions==0.4.3
+openpyxl==3.0.7
+pycparser==2.20
+pydantic==1.8.2
+psycopg2-binary==2.9.3
+psycopg2==2.9.3
+PyMySQL==1.0.2
+SQLAlchemy==1.4.20
+starlette==0.14.2
+uvicorn==0.14.0
