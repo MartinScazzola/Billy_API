@@ -3,7 +3,8 @@ from typing import Optional
 from datetime import datetime
 
 class Expense(BaseModel):
-    id: Optional[int]
+    id_expense: Optional[int]
     name: str
     amount: int
+    currency: str
     date: datetime

@@ -3,8 +3,11 @@ from typing import Optional
 
 from schemes.expense import Expense
 
-class Group(BaseModel):
-    id: Optional[int]
+class CompleteGroup(BaseModel):
+    id_group: Optional[int]
     name: str
     participants: list[int]
-    expenses: list[Expense]
+
+class Group(BaseModel):
+    id_group: Optional[int]
+    name: str
