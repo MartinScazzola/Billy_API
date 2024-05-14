@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Response, status
 from starlette.status import HTTP_204_NO_CONTENT
+from starlette.status import HTTP_404_NOT_FOUND
 from config.db import conn
 from typing import List
 from models.user import users
@@ -26,6 +27,14 @@ def create_user(user: User):
 @user.get('/users/{id}', response_model=User, tags=["Users"])
 def get_user(id:str):
     return conn.execute(users.select().where(users.c.id_user == id)).first()
+
+@user.get('/userid', response_model=User, tags=["Users"])
+def get_user_id_from_email(email:str):
+    users = get_users()
+    for user in users:
+        if user.email == email:
+            return user
+    return Response(status_code=HTTP_404_NOT_FOUND)
 
 @user.delete('/users/{id}', status_code= status.HTTP_204_NO_CONTENT, tags=["Users"])
 def delete_user(id:str):
