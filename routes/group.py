@@ -14,7 +14,6 @@ def get_groups():
 
 @group.post('/groups', response_model=Group, tags=["Groups"])
 def create_group(group: CompleteGroup):
-    print(group)
     new_group = {"name": group.name}
     result = conn.execute(groups.insert().values(new_group))
     created_group_id = result.inserted_primary_key[0]
@@ -23,14 +22,24 @@ def create_group(group: CompleteGroup):
     new_group["id_group"] = created_group_id
     return new_group
 
-# @group.get('/users/{id}', response_model=User, tags=["Users"])
-# def get_user(id:str):
-#     return conn.execute(users.select().where(users.c.id == id)).first()
+@group.post('/groups/{id}/users', response_model=Group, tags=["Groups"])
+def add_user_to_group(id_user:str, id_group:str):
+    conn.execute(group_participants.insert().values({"id_group": id_group, "id_user": id_user}))
+    return get_group(id_group)
 
-# @group.delete('/users/{id}', status_code= status.HTTP_204_NO_CONTENT, tags=["Users"])
-# def delete_user(id:str):
-#     result = conn.execute(users.delete().where(users.c.id == id))
-#     return Response(status_code=HTTP_204_NO_CONTENT)
+@group.delete('/groups/{id}/users', status_code= status.HTTP_204_NO_CONTENT, tags=["Groups"])
+def remove_user_from_group(id_user:str, id_group:str):
+    result = conn.execute(group_participants.delete().where(group_participants.c.id_user == id_user, group_participants.c.id_group == id_group))
+    return Response(status_code=HTTP_204_NO_CONTENT)
+
+@group.get('/groups/{id}', response_model=Group, tags=["Groups"])
+def get_group(id:str):
+    return conn.execute(groups.select().where(groups.c.id_group == id)).first()
+
+@group.delete('/groups/{id}', status_code= status.HTTP_204_NO_CONTENT, tags=["Groups"])
+def delete_group(id:str):
+    result = conn.execute(groups.delete().where(groups.c.id_group == id))
+    return Response(status_code=HTTP_204_NO_CONTENT)
 
 # @group.put('/users/{id}', response_model=User, tags=["Users"])
 # def update(id:str, user: User):
