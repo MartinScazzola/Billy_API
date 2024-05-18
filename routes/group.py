@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Response, status
 from starlette.status import HTTP_204_NO_CONTENT
+from schemes.user import User
 from config.db import conn
 from typing import List
+from models.user import users
 from models.group import groups, group_expenses, group_participants
 from schemes.group import CompleteGroup, Group
 from schemes.expense import Expense
@@ -26,6 +28,14 @@ def create_group(group: CompleteGroup):
 def add_user_to_group(id_user:str, id_group:str):
     conn.execute(group_participants.insert().values({"id_group": id_group, "id_user": id_user}))
     return get_group(id_group)
+
+@group.get('/groups/{id}/users', response_model=List[User], tags=["Groups"])
+def get_users_from_group(id:str):
+    users_in_group = conn.execute(group_participants.select().where(group_participants.c.id_group == id)).fetchall()
+    user_list = []
+    for user in users_in_group:
+        user_list.append(conn.execute(users.select().where(users.c.id_user == user[0])).first())
+    return user_list
 
 @group.delete('/groups/{id}/users', status_code= status.HTTP_204_NO_CONTENT, tags=["Groups"])
 def remove_user_from_group(id_user:str, id_group:str):
