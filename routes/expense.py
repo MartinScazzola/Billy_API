@@ -13,9 +13,8 @@ expense = APIRouter()
 def create_expense(expense: Expense):
     new_expense = {"name": expense.name, "id_group": expense.id_group, "id_user": expense.id_user, "amount": expense.amount, "currency": expense.currency}
     result = conn.execute(group_expenses.insert().values(new_expense))
+    conn.commit()
     created_expense_id = result.inserted_primary_key[0]
-    # for participant in group.participants:
-    #     conn.execute(group_participants.insert().values({"id_group": created_group_id, "id_user": participant}))
     new_expense["id_expense"] = created_expense_id
     return new_expense
 
