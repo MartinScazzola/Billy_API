@@ -18,7 +18,6 @@ def create_expense(expense: Expense):
 
     for id_participant in expense.participants:
         conn.execute(expense_participants.insert().values({"id_expense": created_expense_id, "id_user": id_participant}))
-    conn.commit()
 
     new_expense["participants"] = expense.participants
     return new_expense
@@ -40,7 +39,6 @@ def get_expenses():
 def delete_expense(id: str):
     conn.execute(group_expenses.delete().where(group_expenses.c.id_expense == id))
     conn.execute(expense_participants.delete().where(expense_participants.c.id_expense == id))
-    conn.commit()
     return Response(status_code=HTTP_204_NO_CONTENT)
 
 
