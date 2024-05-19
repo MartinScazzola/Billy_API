@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 
 class Expense(BaseModel):
@@ -9,3 +9,4 @@ class Expense(BaseModel):
     name: str
     amount: int
     currency: str
+    participants: List[int]
