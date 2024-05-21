@@ -27,14 +27,12 @@ def create_expense(expense: Expense):
     result = conn.execute(group_expenses.insert().values(new_expense))
     created_expense_id = result.inserted_primary_key[0]
     new_expense["id_expense"] = created_expense_id
-    conn.commit()
     for id_participant in expense.participants:
         conn.execute(
             expense_participants.insert().values(
                 {"id_expense": created_expense_id, "id_user": id_participant}
             )
         )
-    conn.commit()
     new_expense["participants"] = expense.participants
     return new_expense
 
