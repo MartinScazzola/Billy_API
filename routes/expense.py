@@ -11,7 +11,7 @@ expense = APIRouter()
 
 @expense.post('/expenses', response_model=Expense, tags=["Expenses"])
 def create_expense(expense: Expense):
-    new_expense = {"name": expense.name, "id_group": expense.id_group, "id_user": expense.id_user, "amount": expense.amount, "currency": expense.currency}
+    new_expense = {"name": expense.name, "id_group": expense.id_group, "id_user": expense.id_user, "amount": expense.amount, "currency": expense.currency, 'liquidated': False}
     result = conn.execute(group_expenses.insert().values(new_expense))
     created_expense_id = result.inserted_primary_key[0]
     new_expense["id_expense"] = created_expense_id
@@ -27,7 +27,7 @@ def get_expenses():
     result_group_expenses = conn.execute(group_expenses.select()).fetchall()
     expenses = []
     for expense in result_group_expenses:
-        expense_dict = {"id_expense": expense[0], "id_group": expense[1], "id_user": expense[2], "amount": expense[3], "currency": expense[4], "name": expense[5]}
+        expense_dict = {"id_expense": expense[0], "id_group": expense[1], "id_user": expense[2], "amount": expense[3], "currency": expense[4], "name": expense[5], "liquidated": expense[6]}
         expense_dict["participants"] = []
         result_expense_participants = conn.execute(expense_participants.select().where(expense_participants.c.id_expense == expense[0])).fetchall()
         for participant in result_expense_participants:

@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, ForeignKey
-from sqlalchemy.sql.sqltypes import Integer, String
+from sqlalchemy.sql.sqltypes import Integer, String, Boolean
 
 from config.db import meta, engine
 
@@ -19,7 +19,9 @@ group_expenses = Table("group_expenses", meta, Column("id_expense", Integer, pri
                            Column('id_user', Integer, ForeignKey('users.id_user', ondelete='CASCADE'), nullable=False),
                            Column('amount', Integer),
                            Column('currency', String(255)),
-                           Column('name', String(255)))
+                           Column('name', String(255)),
+                           Column('liquidated', Boolean)
+                           )
 
 
 expense_participants = Table("expense_participants", meta, 
