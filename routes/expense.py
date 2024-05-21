@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Depends, Response, status
+from sqlalchemy.orm import Session
 from starlette.status import HTTP_204_NO_CONTENT
-from config.db import conn
+from config.middleware import get_db
 from typing import List
 from models.group import (
     groups,
@@ -15,7 +16,7 @@ expense = APIRouter()
 
 
 @expense.post("/expenses", response_model=Expense, tags=["Expenses"])
-def create_expense(expense: Expense):
+def create_expense(expense: Expense,db: Session = Depends(get_db)):
     new_expense = {
         "name": expense.name,
         "id_group": expense.id_group,
@@ -24,11 +25,11 @@ def create_expense(expense: Expense):
         "currency": expense.currency,
         "liquidated": False,
     }
-    result = conn.execute(group_expenses.insert().values(new_expense))
+    result = db.execute(group_expenses.insert().values(new_expense))
     created_expense_id = result.inserted_primary_key[0]
     new_expense["id_expense"] = created_expense_id
     for id_participant in expense.participants:
-        conn.execute(
+        db.execute(
             expense_participants.insert().values(
                 {"id_expense": created_expense_id, "id_user": id_participant}
             )
@@ -38,8 +39,8 @@ def create_expense(expense: Expense):
 
 
 @expense.get("/expenses", response_model=List[Expense], tags=["Expenses"])
-def get_expenses():
-    result_group_expenses = conn.execute(group_expenses.select()).fetchall()
+def get_expenses(db: Session = Depends(get_db)):
+    result_group_expenses = db.execute(group_expenses.select()).fetchall()
     expenses = []
     for expense in result_group_expenses:
         expense_dict = {
@@ -52,7 +53,7 @@ def get_expenses():
             "liquidated": expense[6],
         }
         expense_dict["participants"] = []
-        result_expense_participants = conn.execute(
+        result_expense_participants = db.execute(
             expense_participants.select().where(
                 expense_participants.c.id_expense == expense[0]
             )
@@ -66,16 +67,16 @@ def get_expenses():
 @expense.delete(
     "/expenses/{id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Expenses"]
 )
-def delete_expense(id: str):
-    conn.execute(group_expenses.delete().where(group_expenses.c.id_expense == id))
-    conn.execute(
+def delete_expense(id: str, db: Session = Depends(get_db)):
+    db.execute(group_expenses.delete().where(group_expenses.c.id_expense == id))
+    db.execute(
         expense_participants.delete().where(expense_participants.c.id_expense == id)
     )
     return Response(status_code=HTTP_204_NO_CONTENT)
 
 @expense.put("/expenses/{id}", response_model=Expense, tags=["Expenses"])
-def updateExpense(id:str, expense: Expense):
-    result = conn.execute(
+def updateExpense(id:str, expense: Expense, db: Session = Depends(get_db)):
+    result = db.execute(
         group_expenses.update()
         .values(
             id_group=expense.id_group,
@@ -87,7 +88,7 @@ def updateExpense(id:str, expense: Expense):
         )
         .where(group_expenses.c.id_expense == id)
     )
-    expense_updated = conn.execute(group_expenses.select().where(group_expenses.c.id_expense == id)).first()
+    expense_updated = db.execute(group_expenses.select().where(group_expenses.c.id_expense == id)).first()
     expense_updated = { "id_expense": expense_updated[0], "id_group": expense_updated[1], "id_user": expense_updated[2], "amount": expense_updated[3], "currency": expense_updated[4], "name": expense_updated[5], "liquidated": expense_updated[6]
     }
     expense_updated["participants"] = expense.participants
