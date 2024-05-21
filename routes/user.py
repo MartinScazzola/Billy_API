@@ -51,5 +51,5 @@ def update_user(id: str, user: User, db: Session = Depends(get_db)):
 @user.get('/users/{id}/groups', response_model=List[Group], tags=["Users"])
 def get_user_groups(id: str, db: Session = Depends(get_db)):
     group_ids = db.execute(select(group_participants.c.id_group).where(group_participants.c.id_user == id)).fetchall()
-    user_groups = [get_group(group_id[0]) for group_id in group_ids]
+    user_groups = [get_group(group_id[0], db) for group_id in group_ids]
     return user_groups
