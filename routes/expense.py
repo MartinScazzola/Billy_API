@@ -87,7 +87,6 @@ def updateExpense(id:str, expense: Expense):
         )
         .where(group_expenses.c.id_expense == id)
     )
-    conn.commit()
     expense_updated = conn.execute(group_expenses.select().where(group_expenses.c.id_expense == id)).first()
     expense_updated = { "id_expense": expense_updated[0], "id_group": expense_updated[1], "id_user": expense_updated[2], "amount": expense_updated[3], "currency": expense_updated[4], "name": expense_updated[5], "liquidated": expense_updated[6]
     }
