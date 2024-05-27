@@ -30,7 +30,7 @@ def create_expense(expense: Expense,db: Session = Depends(get_db)):
     new_expense["id_expense"] = created_expense_id
 
     for i,id_participant in enumerate(expense.participants):
-        conn.execute(expense_participants.insert().values({"id_expense": created_expense_id, "id_user": id_participant, "amount": expense.expense_distribution[i]}))
+        db.execute(expense_participants.insert().values({"id_expense": created_expense_id, "id_user": id_participant, "amount": expense.expense_distribution[i]}))
 
     new_expense["participants"] = expense.participants
     new_expense["expense_distribution"] = expense.expense_distribution
@@ -52,6 +52,8 @@ def get_expenses(db: Session = Depends(get_db)):
             "liquidated": expense[6],
         }
         expense_dict["participants"] = []
+        expense_dict["expense_distribution"] = []
+
         result_expense_participants = db.execute(
             expense_participants.select().where(
                 expense_participants.c.id_expense == expense[0]
@@ -59,6 +61,7 @@ def get_expenses(db: Session = Depends(get_db)):
         ).fetchall()
         for participant in result_expense_participants:
             expense_dict["participants"].append(participant[1])
+            expense_dict["expense_distribution"].append(participant[2])
         expenses.append(expense_dict)
     return expenses
 
@@ -91,4 +94,5 @@ def updateExpense(id:str, expense: Expense, db: Session = Depends(get_db)):
     expense_updated = { "id_expense": expense_updated[0], "id_group": expense_updated[1], "id_user": expense_updated[2], "amount": expense_updated[3], "currency": expense_updated[4], "name": expense_updated[5], "liquidated": expense_updated[6]
     }
     expense_updated["participants"] = expense.participants
+    expense_updated["expense_distribution"] = expense.expense_distribution
     return expense_updated
