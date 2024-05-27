@@ -24,7 +24,8 @@ group_expenses = Table("group_expenses", meta, Column("id_expense", Integer, pri
 
 expense_participants = Table("expense_participants", meta, 
                            Column('id_expense', Integer, ForeignKey('group_expenses.id_expense', ondelete='CASCADE'), primary_key=True, nullable=False),
-                           Column('id_user', Integer, ForeignKey('users.id_user', ondelete='CASCADE'), primary_key=True, nullable=False))
+                           Column('id_user', Integer, ForeignKey('users.id_user', ondelete='CASCADE'), primary_key=True, nullable=False),
+                           Column('amount', Integer))
 
 
 meta.create_all(engine)
