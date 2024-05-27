@@ -12,3 +12,5 @@ class Expense(BaseModel):
     liquidated: bool
     participants: List[int]
     expense_distribution: List[int]
+    category: str
+    date: str

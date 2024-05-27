@@ -20,7 +20,9 @@ group_expenses = Table("group_expenses", meta, Column("id_expense", Integer, pri
                            Column('amount', Integer),
                            Column('currency', String(255)),
                            Column('name', String(255)),
-                           Column('liquidated', Boolean)
+                           Column('liquidated', Boolean),
+                           Column('category', String(255)),
+                           Column('date', String(255))
                            )
 
 
