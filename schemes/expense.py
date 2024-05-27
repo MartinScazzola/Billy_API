@@ -9,5 +9,6 @@ class Expense(BaseModel):
     name: str
     amount: int
     currency: str
-    participants: List[int]
     liquidated: bool
+    participants: List[int]
+    expense_distribution: List[int]

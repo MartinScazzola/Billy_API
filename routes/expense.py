@@ -28,13 +28,12 @@ def create_expense(expense: Expense,db: Session = Depends(get_db)):
     result = db.execute(group_expenses.insert().values(new_expense))
     created_expense_id = result.inserted_primary_key[0]
     new_expense["id_expense"] = created_expense_id
-    for id_participant in expense.participants:
-        db.execute(
-            expense_participants.insert().values(
-                {"id_expense": created_expense_id, "id_user": id_participant}
-            )
-        )
+
+    for i,id_participant in enumerate(expense.participants):
+        conn.execute(expense_participants.insert().values({"id_expense": created_expense_id, "id_user": id_participant, "amount": expense.expense_distribution[i]}))
+
     new_expense["participants"] = expense.participants
+    new_expense["expense_distribution"] = expense.expense_distribution
     return new_expense
 
 
